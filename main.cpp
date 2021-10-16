@@ -10,9 +10,10 @@ using namespace std;
  * the standard input according to the problem statement.
  **/
 
+
 int main()
 {
-
+    int availableBoosts = 1;
     // game loop
     while (1) {
         int x;
@@ -38,6 +39,12 @@ int main()
         {
             thrust = "0";
         }
+        if(nextCheckpointAngle <= 10 && availableBoosts>0)
+        {   
+            --availableBoosts;
+            thrust = "BOOST";
+        }        
+        
         cout << nextCheckpointX << " " << nextCheckpointY << " " + thrust << endl;
     }
 }
