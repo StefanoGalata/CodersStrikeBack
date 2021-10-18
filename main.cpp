@@ -103,9 +103,6 @@ int main()
     int lastPodPositionX = 0; 
     int lastPodPositionY = 0;
 
-    float checkpointRadius = 600;
-    float decelerationFactor = 2.f;
-
 
     // game loop
     while (1) {
@@ -169,14 +166,16 @@ int main()
 
         cin >> opponentX >> opponentY; cin.ignore();
 
-        /*int distanceFromOpponent = sqrt(pow(opponentX-x,2) + pow(opponentY-y,2));
+        //int distanceFromOpponent = sqrt(pow(opponentX-x,2) + pow(opponentY-y,2));
         int opponentDistanceFromLastCheckPoint = sqrt(pow(opponentX-nextCheckpointX,2) + pow(opponentY-nextCheckpointY,2));
-        int angleBetweenMyPodAndOpponentPod = atan2(opponentY-y, opponentX-x) * (180.0/3.141592653589793238463);*/
 
         int velocity = 100;
-        if(nextCheckpointAngle > 90 || nextCheckpointAngle < -90 || nextCheckpointDist < 3000)
+
+        //if(nextCheckpointDist < 1500 &&)
+        
+        if(nextCheckpointAngle > 20 || nextCheckpointAngle < -20 || nextCheckpointDist<=3000)
         {
-            velocity = 100.f * (1.f-((float)nextCheckpointAngle/90.f)) * ((float)nextCheckpointDist/(decelerationFactor*checkpointRadius));
+            velocity = 100.f * (1.f-abs(((float)nextCheckpointAngle/90.f))) * ((float)nextCheckpointDist/(2.f*600.f)));
             cerr << "Velocity calc = " + to_string(velocity) << endl;
             velocity = clamp(velocity, 0, 100);
         }
@@ -186,6 +185,7 @@ int main()
         
         cerr << "Velocity = " + to_string(velocity) << endl;
         cerr << "Next dist = " + to_string(nextCheckpointDist) << endl;
+        cerr << "Opponent Distance from checkPoint = " << opponentDistanceFromLastCheckPoint << endl;
         cerr << "Next checkpoint = " + to_string(nextCheckpointX) << ", " << to_string(nextCheckpointY) << endl;
         cerr << "Next checkpoint angle = " + to_string(nextCheckpointAngle) << endl;
         cerr << "Cosine(nextCheckpointAngle) = " + to_string(cos(nextCheckpointAngle)) << endl;
