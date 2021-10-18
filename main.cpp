@@ -100,18 +100,24 @@ int main()
     bool firstCheckpointAssigned = false;
     bool firstFrameSkipped = true;
 
+    int lastPodPositionX = 0; 
+    int lastPodPositionY = 0;
+
+    float checkpointRadius = 600;
+    float decelerationFactor = 2.f;
+
 
     // game loop
     while (1) {
         int x;
         int y;
 
-        vector<int> myPodPosition = {x,y};
+        //vector<int> myPodPosition = {x,y};
         
         int nextCheckpointX;
         int nextCheckpointY;
 
-        vector<int> nextCheckpointPosition = {nextCheckpointX, nextCheckpointY};
+        //vector<int> nextCheckpointPosition = {nextCheckpointX, nextCheckpointY};
 
         int nextCheckpointDist;
         int nextCheckpointAngle;
@@ -151,31 +157,33 @@ int main()
                 shouldUseBoost = true;
             }
         }
+
+
         
         cin >> x >> y >> nextCheckpointX >> nextCheckpointY >> nextCheckpointDist >> nextCheckpointAngle; cin.ignore();
 
         int opponentX;
         int opponentY;
-        float decelerationFactor = 0.9f;
 
-        vector<int> opponentPosition = {opponentX, opponentY};
+        //vector<int> opponentPosition = {opponentX, opponentY};
 
         cin >> opponentX >> opponentY; cin.ignore();
 
-        int velocity = 100;
-        
+        /*int distanceFromOpponent = sqrt(pow(opponentX-x,2) + pow(opponentY-y,2));
+        int opponentDistanceFromLastCheckPoint = sqrt(pow(opponentX-nextCheckpointX,2) + pow(opponentY-nextCheckpointY,2));
+        int angleBetweenMyPodAndOpponentPod = atan2(opponentY-y, opponentX-x) * (180.0/3.141592653589793238463);*/
 
-        if(nextCheckpointAngle >=90 || nextCheckpointAngle <= -90)
+        int velocity = 100;
+        if(nextCheckpointAngle > 90 || nextCheckpointAngle < -90 || nextCheckpointDist < 3000)
         {
-            velocity = 20;
-        }
-        else if(nextCheckpointDist <= 1500 && (nextCheckpointAngle <= -25 || nextCheckpointAngle >= 25))
-        {
-            velocity = velocity * cos(nextCheckpointAngle) * decelerationFactor;
+            velocity = 100.f * (1.f-((float)nextCheckpointAngle/90.f)) * ((float)nextCheckpointDist/(decelerationFactor*checkpointRadius));
+            cerr << "Velocity calc = " + to_string(velocity) << endl;
             velocity = clamp(velocity, 0, 100);
         }
+        
+        
         string thrust = to_string(velocity);
-
+        
         cerr << "Velocity = " + to_string(velocity) << endl;
         cerr << "Next dist = " + to_string(nextCheckpointDist) << endl;
         cerr << "Next checkpoint = " + to_string(nextCheckpointX) << ", " << to_string(nextCheckpointY) << endl;
@@ -185,10 +193,17 @@ int main()
         cerr << "All CheckpointRegistered = " + to_string(allCheckpointRegistered) << endl;
         cerr << "Thrust = " + thrust << endl;
         cerr << "Registered checkpoints = " + to_string(registeredCheckpoints.size()) << endl;
+        cerr << "Delta position = " << x-lastPodPositionX << ", " << y-lastPodPositionY << endl;
+        //cerr << "Angle between my and opp pods = " << angleBetweenMyPodAndOpponentPod << endl; 
+        //cerr << "Distance from opponent = " << distanceFromOpponent << endl;
 
-        PrintDebugCheckpointList(registeredCheckpoints);//*/
+        lastPodPositionX = x;
+        lastPodPositionY = y;
         
-        if(shouldUseBoost && availableBoosts > 0 && nextCheckpointAngle<=10 && nextCheckpointAngle>= -10)
+
+        PrintDebugCheckpointList(registeredCheckpoints);
+        
+        if(shouldUseBoost && availableBoosts > 0 && (nextCheckpointAngle<=20 && nextCheckpointAngle>=-20))
         {
             --availableBoosts;
             thrust = "BOOST";
